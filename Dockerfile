@@ -107,9 +107,7 @@ RUN { \
 # comment out a few problematic configuration values
 	&& find /etc/mysql/ -name '*.cnf' -print0 \
 		| xargs -0 grep -lZE '^(bind-address|log)' \
-		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/' \
-# don't reverse lookup hostnames, they are usually another container
-	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
+		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/'
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/mysql/mysql.log \
@@ -121,7 +119,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 RUN chmod 755 /usr/local/bin/docker-entrypoint.sh 
 
-COPY ./config/custom.cnf /etc/mysql/conf.d/custom.cnf
+COPY ./config/custom.cnf /etc/mysql/conf.d/docker.cnf
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
