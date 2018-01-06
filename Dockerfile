@@ -109,6 +109,8 @@ RUN { \
 		| xargs -0 grep -lZE '^(bind-address|log)' \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/'
 
+ENV MYSQL_INITDB_SKIP_TZINFO true
+
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/mysql/mysql.log \
 	&& ln -sf /dev/stderr /var/log/mysql/error.log
