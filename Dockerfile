@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM debian:jessie
+FROM phusion/baseimage:0.9.22
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -110,6 +110,10 @@ RUN { \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/' \
 # don't reverse lookup hostnames, they are usually another container
 	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
+
+# forward request and error logs to docker log collector
+RUN ln -sf /dev/stdout /var/log/mysql/mysql.log \
+	&& ln -sf /dev/stderr /var/log/mysql/error.log
 
 VOLUME /var/lib/mysql
 
